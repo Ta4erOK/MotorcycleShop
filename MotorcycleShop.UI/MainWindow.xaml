@@ -1,0 +1,111 @@
+<Window x:Class="MotorcycleShop.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:MotorcycleShop.UI.Controls"
+        Title="Мотоциклы" Height="700" Width="1000"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Панель фильтров -->
+        <Border Grid.Row="0" Background="LightGray" Padding="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <TextBox x:Name="SearchTextBox"
+                             Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}"
+                             Width="200"
+                             Margin="0,0,10,0"
+                             HorizontalAlignment="Left"
+                             VerticalAlignment="Center"
+                             controls:PlaceholderHelper.Placeholder="Поиск мотоциклов..."/>
+
+                    <ComboBox x:Name="BrandComboBox"
+                              ItemsSource="{Binding Brands}"
+                              SelectedItem="{Binding SelectedBrand, UpdateSourceTrigger=PropertyChanged}"
+                              Width="150"
+                              Margin="0,0,10,0"
+                              HorizontalAlignment="Left"
+                              VerticalAlignment="Center"
+                              controls:PlaceholderHelper.Placeholder="Марка"/>
+
+                    <ComboBox x:Name="YearComboBox"
+                              ItemsSource="{Binding Years}"
+                              SelectedItem="{Binding SelectedYear, UpdateSourceTrigger=PropertyChanged}"
+                              Width="100"
+                              Margin="0,0,10,0"
+                              HorizontalAlignment="Left"
+                              VerticalAlignment="Center"
+                              controls:PlaceholderHelper.Placeholder="Год"/>
+
+                    <TextBox x:Name="MinPriceTextBox"
+                             Text="{Binding MinPrice, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F2}}"
+                             Width="80"
+                             Margin="0,0,5,0"
+                             HorizontalAlignment="Left"
+                             VerticalAlignment="Center"
+                             controls:PlaceholderHelper.Placeholder="Мин. цена"/>
+
+                    <TextBlock Text="—" Margin="0,5,5,0" VerticalAlignment="Center"/>
+
+                    <TextBox x:Name="MaxPriceTextBox"
+                             Text="{Binding MaxPrice, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F2}}"
+                             Width="80"
+                             Margin="0,0,10,0"
+                             HorizontalAlignment="Left"
+                             VerticalAlignment="Center"
+                             controls:PlaceholderHelper.Placeholder="Макс. цена"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Поиск"
+                            Command="{Binding SearchCommand}"
+                            Width="80"
+                            Margin="0,0,5,0"/>
+
+                    <Button Content="Сброс"
+                            Command="{Binding ClearFiltersCommand}"
+                            Width="80"
+                            Margin="0,0,10,0"/>
+
+                    <Button Content="{Binding CartItemCount, StringFormat='Корзина ({0})'}"
+                            Command="{Binding OpenCartCommand}"
+                            Padding="10,5"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- DataGrid с мотоциклами -->
+        <DataGrid Grid.Row="1"
+                  ItemsSource="{Binding Motorcycles}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  SelectionMode="Single"
+                  MouseDoubleClick="MotorcycleDataGrid_MouseDoubleClick">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Марка" Binding="{Binding Brand}" Width="*"/>
+                <DataGridTextColumn Header="Модель" Binding="{Binding Model}" Width="*"/>
+                <DataGridTextColumn Header="Год" Binding="{Binding Year}" Width="80"/>
+                <DataGridTextColumn Header="Объем" Binding="{Binding EngineCapacity, StringFormat={}{0} cc}" Width="80"/>
+                <DataGridTextColumn Header="Пробег" Binding="{Binding Mileage, StringFormat={}{0} км}" Width="100"/>
+                <DataGridTextColumn Header="Цвет" Binding="{Binding Color}" Width="*"/>
+                <DataGridTextColumn Header="Цена" Binding="{Binding Price, StringFormat={}{0:C}}" Width="100"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- StatusBar -->
+        <StatusBar Grid.Row="2">
+            <StatusBarItem>
+                <TextBlock Text="{Binding StatusMessage}"/>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>

@@ -1,0 +1,81 @@
+<Window x:Class="MotorcycleShop.UI.Views.MotorcycleDetailsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Детали мотоцикла" Height="500" Width="600"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Изображение мотоцикла -->
+        <Border Grid.Row="0" Background="LightGray" Height="200" HorizontalAlignment="Center" Width="400">
+            <Image x:Name="MotorcycleImage" 
+                   Source="{Binding Motorcycle.ImagePath}" 
+                   Stretch="Uniform" 
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center"/>
+        </Border>
+
+        <!-- Информация о мотоцикле -->
+        <ScrollViewer Grid.Row="1" Margin="0,10,0,10">
+            <StackPanel>
+                <TextBlock Text="{Binding Motorcycle, StringFormat='{}{0.Brand} {0.Model}'}"
+                           FontSize="24" FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,10"/>
+                
+                <Grid Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Год выпуска:" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Motorcycle.Year}" Margin="5,0"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Объем двигателя:" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Motorcycle.EngineCapacity, StringFormat={}{0} cc}" Margin="5,0"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Пробег:" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Motorcycle.Mileage, StringFormat={}{0} км}" Margin="5,0"/>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Цвет:" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Motorcycle.Color}" Margin="5,0"/>
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Цена:" FontWeight="SemiBold"/>
+                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Motorcycle.Price, StringFormat={}{0:C}}" Margin="5,0" FontSize="16" Foreground="Green"/>
+
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Описание:" FontWeight="SemiBold" Margin="0,10,0,0"/>
+                    <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Motorcycle.Description}" TextWrapping="Wrap" Margin="5,10,0,0"/>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Кнопки -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Content="В корзину" 
+                    Command="{Binding AddToCartCommand}" 
+                    Width="100" 
+                    Height="30" 
+                    Margin="0,0,10,0"
+                    Background="LightBlue"/>
+            
+            <Button Content="Назад" 
+                    Command="{Binding GoBackCommand}" 
+                    Width="100" 
+                    Height="30"
+                    Background="LightGray"/>
+        </StackPanel>
+    </Grid>
+</Window>

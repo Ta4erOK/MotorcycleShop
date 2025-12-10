@@ -1,0 +1,104 @@
+<Window x:Class="MotorcycleShop.UI.Views.OrderStatusWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:MotorcycleShop.UI.Controls"
+        Title="Статус заказа" Height="600" Width="600"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Поиск заказа -->
+        <GroupBox Grid.Row="0" Header="Поиск заказа" Margin="0,0,0,15">
+            <Grid Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Номер заказа:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <TextBox x:Name="OrderNumberTextBox" Grid.Column="1" 
+                         Text="{Binding OrderNumber, UpdateSourceTrigger=PropertyChanged}" 
+                         Margin="5" 
+                         Height="25"
+                         controls:PlaceholderHelper.Placeholder="Введите номер заказа"/>
+                
+                <Button Grid.Column="2" 
+                        Content="Поиск" 
+                        Command="{Binding SearchCommand}"
+                        Width="80" 
+                        Height="25" 
+                        Margin="5,0,0,0"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Информация о заказе -->
+        <GroupBox Grid.Row="1" Header="Информация о заказе" Margin="0,0,0,15">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Статус:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding CurrentOrder.Status, TargetNullValue='Не найден'}" 
+                           FontWeight="SemiBold" Foreground="Blue" VerticalAlignment="Center"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Дата заказа:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding CurrentOrder.OrderDate, StringFormat='{}{0:dd.MM.yyyy HH:mm}', TargetNullValue='Не найдена'}" 
+                           VerticalAlignment="Center"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Сумма:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding CurrentOrder.TotalAmount, StringFormat={}{0:C}, TargetNullValue='Не найдена'}" 
+                           FontWeight="Bold" Foreground="Green" VerticalAlignment="Center"/>
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Состав заказа:" FontWeight="SemiBold" VerticalAlignment="Top" Margin="0,8,0,0"/>
+                <ScrollViewer Grid.Row="3" Grid.Column="1" Height="100" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding CurrentOrder.Items, TargetNullValue={}}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=., StringFormat='{}{0.Motorcycle.Brand} {0.Motorcycle.Model} - {0.Quantity} шт. x {0.Price:C} = {0.Price:C}'}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </GroupBox>
+
+        <!-- Сообщение -->
+        <TextBlock Grid.Row="2" 
+                   Text="{Binding StatusMessage}" 
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center" 
+                   FontSize="16" 
+                   FontStyle="Italic"
+                   Foreground="Gray"/>
+
+        <!-- Кнопки -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+            <Button Content="Поиск" 
+                    Command="{Binding SearchCommand}" 
+                    Width="100" 
+                    Height="35" 
+                    Margin="0,0,10,0"
+                    Background="LightBlue"/>
+            
+            <Button Content="Новый заказ" 
+                    Command="{Binding NewOrderCommand}" 
+                    Width="100" 
+                    Height="35"
+                    Background="LightGreen"/>
+        </StackPanel>
+    </Grid>
+</Window>
