@@ -5,18 +5,20 @@ using System.Windows;
 using System.Windows.Input;
 using MotorcycleShop.Data.Interfaces;
 using MotorcycleShop.Domain;
+using MotorcycleShop.UI.Views;
 
 namespace MotorcycleShop.UI.ViewModels
 {
     public class CartViewModel : BaseViewModel
     {
         private readonly ICartRepository _cartRepository;
+        private readonly CartWindow _window;
 
         private decimal _totalAmount;
         private string _statusMessage = "Готово";
 
         public ObservableCollection<CartItem> CartItems { get; }
-        
+
         public decimal TotalAmount
         {
             get => _totalAmount;
@@ -36,6 +38,22 @@ namespace MotorcycleShop.UI.ViewModels
         public CartViewModel(ICartRepository cartRepository)
         {
             _cartRepository = cartRepository;
+            _window = null; // будет null, если не передано окно
+
+            CartItems = new ObservableCollection<CartItem>();
+
+            CheckoutCommand = new RelayCommand(OpenCheckoutWindow);
+            RemoveItemCommand = new RelayCommand<CartItem>(RemoveItem);
+            ContinueShoppingCommand = new RelayCommand(ContinueShopping);
+
+            LoadCartItemsAsync();
+        }
+
+        // Конструктор с передачей окна
+        public CartViewModel(ICartRepository cartRepository, CartWindow window)
+        {
+            _cartRepository = cartRepository;
+            _window = window;
 
             CartItems = new ObservableCollection<CartItem>();
 
@@ -98,7 +116,8 @@ namespace MotorcycleShop.UI.ViewModels
 
         private void ContinueShopping()
         {
-            // Закрыть окно корзины - это будет обработано в code-behind
+            // Закрыть окно корзины
+            _window?.Close();
         }
     }
 }

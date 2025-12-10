@@ -1,5 +1,4 @@
 using System.Windows;
-using MotorcycleShop.Data.InMemory;
 using MotorcycleShop.Data.Interfaces;
 using MotorcycleShop.UI.ViewModels;
 
@@ -10,29 +9,15 @@ namespace MotorcycleShop.UI.Views
     /// </summary>
     public partial class CartWindow : Window
     {
-        public CartWindow()
-        {
-            InitializeComponent();
-
-            // В продвинутом приложении зависимости будут внедряться через DI контейнер
-            var cartRepository = new InMemoryCartRepository();
-            
-            var viewModel = new CartViewModel(cartRepository);
-            DataContext = viewModel;
-        }
+        private CartViewModel _viewModel;
 
         // Конструктор для передачи репозитория извне
         public CartWindow(ICartRepository cartRepository)
         {
             InitializeComponent();
-            
-            var viewModel = new CartViewModel(cartRepository);
-            DataContext = viewModel;
-        }
 
-        private void ContinueShoppingCommand_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
-        {
-            this.Close();
+            _viewModel = new CartViewModel(cartRepository, this);
+            DataContext = _viewModel;
         }
 
         private void RemoveItemCommand_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using MotorcycleShop.Data.Interfaces;
 using MotorcycleShop.Domain;
+using MotorcycleShop.UI.Views;
 
 namespace MotorcycleShop.UI.ViewModels
 {
@@ -10,6 +11,7 @@ namespace MotorcycleShop.UI.ViewModels
     {
         private readonly ICartRepository _cartRepository;
         private readonly IOrderRepository _orderRepository;
+        private readonly OrderWindow _window;
 
         private string _customerName = string.Empty;
         private string _email = string.Empty;
@@ -61,6 +63,20 @@ namespace MotorcycleShop.UI.ViewModels
         {
             _cartRepository = cartRepository;
             _orderRepository = orderRepository;
+            _window = null;
+
+            PayCommand = new RelayCommand(async () => await ProcessOrderAsync());
+            GoBackCommand = new RelayCommand(GoBack);
+
+            CalculateOrderTotalAsync();
+        }
+
+        // Конструктор с передачей окна
+        public OrderViewModel(ICartRepository cartRepository, IOrderRepository orderRepository, OrderWindow window)
+        {
+            _cartRepository = cartRepository;
+            _orderRepository = orderRepository;
+            _window = window;
 
             PayCommand = new RelayCommand(async () => await ProcessOrderAsync());
             GoBackCommand = new RelayCommand(GoBack);
@@ -75,6 +91,35 @@ namespace MotorcycleShop.UI.ViewModels
 
         private async Task ProcessOrderAsync()
         {
+            // Проверка обязательных полей
+            if (string.IsNullOrWhiteSpace(CustomerName))
+            {
+                System.Windows.MessageBox.Show("Пожалуйста, введите ФИО.", "Ошибка",
+                    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(Email))
+            {
+                System.Windows.MessageBox.Show("Пожалуйста, введите email.", "Ошибка",
+                    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(Phone))
+            {
+                System.Windows.MessageBox.Show("Пожалуйста, введите телефон.", "Ошибка",
+                    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(Address))
+            {
+                System.Windows.MessageBox.Show("Пожалуйста, введите адрес доставки.", "Ошибка",
+                    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
                 // Создание заказа
@@ -109,7 +154,7 @@ namespace MotorcycleShop.UI.ViewModels
                 // Открытие окна оплаты
                 var paymentWindow = new Views.PaymentWindow(savedOrder);
                 var result = paymentWindow.ShowDialog();
-                
+
                 if (result == true)
                 {
                     // Закрытие окна оформления заказа с результатом true (успешно)
@@ -119,14 +164,15 @@ namespace MotorcycleShop.UI.ViewModels
             catch (Exception ex)
             {
                 // В реальном приложении нужно показать сообщение об ошибке
-                System.Windows.MessageBox.Show($"Ошибка при создании заказа: {ex.Message}", "Ошибка", 
+                System.Windows.MessageBox.Show($"Ошибка при создании заказа: {ex.Message}", "Ошибка",
                     System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             }
         }
 
         private void GoBack()
         {
-            // Закрытие окна - будет обработано в code-behind
+            // Закрытие окна
+            _window?.Close();
         }
     }
 }

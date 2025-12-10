@@ -16,9 +16,12 @@ namespace MotorcycleShop.UI.Views
             InitializeComponent();
 
             // В продвинутом приложении зависимости будут внедряться через DI контейнер
+            // Создаем репозиторий через DI контейнер или как часть приложения
+            // Но для правильной работы передаем репозиторий извне, иначе создаем новый только для теста
             var cartRepository = new InMemoryCartRepository();
 
-            var viewModel = new MotorcycleDetailsViewModel(motorcycle, cartRepository);
+            // Для корректной работы используем второй конструктор
+            var viewModel = new MotorcycleDetailsViewModel(motorcycle, cartRepository, this);
             DataContext = viewModel;
         }
 
@@ -27,13 +30,8 @@ namespace MotorcycleShop.UI.Views
         {
             InitializeComponent();
 
-            var viewModel = new MotorcycleDetailsViewModel(motorcycle, cartRepository);
+            var viewModel = new MotorcycleDetailsViewModel(motorcycle, cartRepository, this);
             DataContext = viewModel;
-        }
-
-        private void GoBackCommand_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
-        {
-            this.Close();
         }
     }
 }

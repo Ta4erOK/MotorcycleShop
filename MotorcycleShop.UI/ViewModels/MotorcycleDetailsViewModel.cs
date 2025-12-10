@@ -2,6 +2,7 @@ using System;
 using System.Windows.Input;
 using MotorcycleShop.Data.Interfaces;
 using MotorcycleShop.Domain;
+using MotorcycleShop.UI.Views;
 
 namespace MotorcycleShop.UI.ViewModels
 {
@@ -9,6 +10,7 @@ namespace MotorcycleShop.UI.ViewModels
     {
         private readonly Motorcycle _motorcycle;
         private readonly ICartRepository _cartRepository;
+        private readonly MotorcycleDetailsWindow _window;
 
         public Motorcycle Motorcycle { get; }
 
@@ -19,6 +21,19 @@ namespace MotorcycleShop.UI.ViewModels
         {
             _motorcycle = motorcycle ?? throw new ArgumentNullException(nameof(motorcycle));
             _cartRepository = cartRepository;
+            _window = null; // будет null, если не передано окно
+            Motorcycle = _motorcycle;
+
+            AddToCartCommand = new RelayCommand(AddToCart);
+            GoBackCommand = new RelayCommand(GoBack);
+        }
+
+        // Конструктор с передачей окна
+        public MotorcycleDetailsViewModel(Motorcycle motorcycle, ICartRepository cartRepository, MotorcycleDetailsWindow window)
+        {
+            _motorcycle = motorcycle ?? throw new ArgumentNullException(nameof(motorcycle));
+            _cartRepository = cartRepository;
+            _window = window;
             Motorcycle = _motorcycle;
 
             AddToCartCommand = new RelayCommand(AddToCart);
@@ -35,7 +50,8 @@ namespace MotorcycleShop.UI.ViewModels
 
         private void GoBack()
         {
-            // Закрыть окно - это будет обработано в code-behind
+            // Закрыть окно
+            _window?.Close();
         }
     }
 }

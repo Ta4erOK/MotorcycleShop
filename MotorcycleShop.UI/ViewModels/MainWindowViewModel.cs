@@ -156,12 +156,30 @@ namespace MotorcycleShop.UI.ViewModels
         private async Task ClearFiltersAsync()
         {
             SearchTerm = string.Empty;
-            SelectedBrand = string.Empty;
+            SelectedBrand = string.Empty;  // или можно использовать null, если тип будет изменен на string?
             SelectedYear = null;
             MinPrice = null;
             MaxPrice = null;
 
-            await SearchAsync();
+            // Загружаем все мотоциклы без фильтрации
+            try
+            {
+                StatusMessage = "Загрузка каталога...";
+
+                var motorcycles = await _motorcycleRepository.GetAllAsync();
+
+                Motorcycles.Clear();
+                foreach (var motorcycle in motorcycles)
+                {
+                    Motorcycles.Add(motorcycle);
+                }
+
+                StatusMessage = $"Показано {Motorcycles.Count} мотоциклов";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Ошибка загрузки каталога: {ex.Message}";
+            }
         }
 
         private void OpenCart()

@@ -32,7 +32,7 @@ namespace MotorcycleShop.Data.InMemory
         {
             // Проверяем, есть ли уже этот мотоцикл в корзине
             var existingItem = _cartItems.FirstOrDefault(item => item.Motorcycle.Id == motorcycle.Id);
-            
+
             if (existingItem != null)
             {
                 // Если мотоцикл уже в корзине, увеличиваем количество
@@ -46,7 +46,8 @@ namespace MotorcycleShop.Data.InMemory
                 {
                     Id = _nextId++,
                     Motorcycle = motorcycle,
-                    Quantity = quantity
+                    Quantity = quantity,
+                    UnitPrice = motorcycle.Price // сохраняем цену на момент добавления в корзину
                 };
                 _cartItems.Add(cartItem);
                 return Task.FromResult(cartItem);

@@ -10,36 +10,29 @@ namespace MotorcycleShop.UI.Views
     /// </summary>
     public partial class OrderWindow : Window
     {
-        private readonly ICartRepository _cartRepository;
+        private OrderViewModel _viewModel;
 
         public OrderWindow()
         {
             InitializeComponent();
 
             // В продвинутом приложении зависимости будут внедряться через DI контейнер
-            _cartRepository = new InMemoryCartRepository();
+            var cartRepository = new InMemoryCartRepository();
             var orderRepository = new InMemoryOrderRepository();
-            
-            var viewModel = new OrderViewModel(_cartRepository, orderRepository);
-            DataContext = viewModel;
+
+            _viewModel = new OrderViewModel(cartRepository, orderRepository, this);
+            DataContext = _viewModel;
         }
 
         // Конструктор для передачи репозитория корзины извне
         public OrderWindow(ICartRepository cartRepository)
         {
             InitializeComponent();
-            
-            _cartRepository = cartRepository;
-            var orderRepository = new InMemoryOrderRepository();
-            
-            var viewModel = new OrderViewModel(_cartRepository, orderRepository);
-            DataContext = viewModel;
-        }
 
-        private void GoBackCommand_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
-        {
-            this.DialogResult = false;
-            this.Close();
+            var orderRepository = new InMemoryOrderRepository();
+
+            _viewModel = new OrderViewModel(cartRepository, orderRepository, this);
+            DataContext = _viewModel;
         }
     }
 }

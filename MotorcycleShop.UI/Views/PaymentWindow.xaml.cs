@@ -11,12 +11,14 @@ namespace MotorcycleShop.UI.Views
     /// </summary>
     public partial class PaymentWindow : Window
     {
+        private PaymentViewModel _viewModel;
+
         public PaymentWindow(Order order)
         {
             InitializeComponent();
 
-            var viewModel = new PaymentViewModel(order);
-            DataContext = viewModel;
+            _viewModel = new PaymentViewModel(order, this);
+            DataContext = _viewModel;
 
             // Добавляем обработчики для форматирования ввода
             CardNumberTextBox.TextChanged += CardNumberTextBox_TextChanged;
@@ -82,9 +84,45 @@ namespace MotorcycleShop.UI.Views
             }
         }
 
+        private void PayCommand_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
+        {
+            // Обработка оплаты будет в ViewModel
+            if (DataContext is PaymentViewModel viewModel)
+            {
+                viewModel.ProcessPayment();
+
+                // Установка результата для окна
+                this.DialogResult = true;
+            }
+        }
+
         private void CancelCommand_Executed(object sender, System.Windows.Input.ExecutedRoutedEventArgs e)
         {
             this.DialogResult = false;
+            this.Close();
+        }
+
+        private void CloseAllWindowsExceptMain()
+        {
+            var windows = new System.Collections.Generic.List<Window>();
+
+            // Собираем все окна, кроме текущего и главного
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window != this && window != Application.Current.MainWindow)
+                {
+                    windows.Add(window);
+                }
+            }
+
+            // Закрываем все собранные окна
+            foreach (var window in windows)
+            {
+                window.Close();
+            }
+
+            // Закрываем текущее окно
+            this.DialogResult = true;
             this.Close();
         }
     }

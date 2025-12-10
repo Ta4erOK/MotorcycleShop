@@ -1,77 +1,101 @@
 <Window x:Class="MotorcycleShop.UI.Views.CartWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Корзина" Height="500" Width="800"
-        WindowStartupLocation="CenterScreen">
+        Title="Корзина" Height="700" Width="1000"
+        WindowStartupLocation="CenterScreen"
+        Background="#FAFAFA">
     <Grid Margin="20">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <!-- Заголовок -->
+        <Border Grid.Row="0" Background="{StaticResource SecondaryBrush}" Padding="20,15" CornerRadius="8">
+            <TextBlock Text="Корзина"
+                       FontSize="24" FontWeight="Bold"
+                       HorizontalAlignment="Center"
+                       Foreground="White"/>
+        </Border>
+
         <!-- Список товаров в корзине -->
-        <DataGrid Grid.Row="0" 
-                  ItemsSource="{Binding CartItems}" 
-                  AutoGenerateColumns="False"
-                  CanUserAddRows="False"
-                  SelectionMode="Single">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Марка" Binding="{Binding Motorcycle.Brand}" Width="*"/>
-                <DataGridTextColumn Header="Модель" Binding="{Binding Motorcycle.Model}" Width="*"/>
-                <DataGridTextColumn Header="Количество" Binding="{Binding Quantity}" Width="80"/>
-                <DataGridTextColumn Header="Цена за единицу" Binding="{Binding Motorcycle.Price, StringFormat={}{0:C}}" Width="100"/>
-                <DataGridTextColumn Header="Общая цена" Binding="{Binding Price, StringFormat={}{0:C}}" Width="100"/>
-                <DataGridTemplateColumn Header="Действия" Width="80">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Content="Удалить" 
-                                    Command="{Binding DataContext.RemoveItemCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                    CommandParameter="{Binding}"
-                                    Width="60" Height="25"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid>
+        <Border Grid.Row="1" Background="White" Padding="15" CornerRadius="8" Margin="0,15,0,0">
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="2" BlurRadius="5" Opacity="0.2"/>
+            </Border.Effect>
+            <DataGrid Grid.Row="0"
+                      ItemsSource="{Binding CartItems}"
+                      Style="{StaticResource ModernDataGridStyle}"
+                      RowStyle="{StaticResource ModernDataGridRowStyle}"
+                      AlternationCount="2">
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="DataGridColumnHeader"
+                           BasedOn="{StaticResource ModernDataGridColumnHeaderStyle}">
+                        <Setter Property="FontWeight" Value="Bold" />
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Марка" Binding="{Binding Motorcycle.Brand}" Width="*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Модель" Binding="{Binding Motorcycle.Model}" Width="*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Количество" Binding="{Binding Quantity}" Width="80" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Цена за единицу" Binding="{Binding Motorcycle.Price, StringFormat={}{0:C}}" Width="120" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Общая цена" Binding="{Binding Price, StringFormat={}{0:C}}" Width="120" IsReadOnly="True"/>
+                    <DataGridTemplateColumn Header="Действия" Width="150">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="🗑 Удалить"
+                                        Command="{Binding DataContext.RemoveItemCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding}"
+                                        Style="{StaticResource ModernButtonStyle}"
+                                        Background="{StaticResource AccentBrush}"
+                                        Width="100" Height="70"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
 
         <!-- Общая сумма -->
-        <Border Grid.Row="1" Background="LightBlue" Padding="10" Margin="0,10">
+        <Border Grid.Row="2" Background="{StaticResource PrimaryLightBrush}" Padding="20" Margin="0,15,0,0" CornerRadius="8">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                
-                <TextBlock Grid.Column="0" 
-                           Text="{Binding TotalAmount, StringFormat='Общая сумма заказа: {0:C}'}" 
-                           FontSize="16" 
-                           FontWeight="Bold"/>
+
+                <TextBlock Grid.Column="0"
+                           Text="{Binding StatusMessage}"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Foreground="{StaticResource SecondaryBrush}"/>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding TotalAmount, StringFormat='Итого: {0:C}'}"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           Foreground="Green"/>
             </Grid>
         </Border>
 
         <!-- Кнопки -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
-            <Button Content="Оформить заказ" 
-                    Command="{Binding CheckoutCommand}" 
-                    Width="120" 
-                    Height="35" 
-                    Margin="0,0,10,0"
-                    Background="LightGreen"/>
-            
-            <Button Content="Удалить выделенное" 
-                    Command="{Binding RemoveItemCommand}"
-                    CommandParameter="{Binding ElementName=CartDataGrid, Path=SelectedItem}"
-                    Width="120" 
-                    Height="35" 
-                    Margin="0,0,10,0"
-                    Background="LightCoral"/>
-            
-            <Button Content="Продолжить покупки" 
-                    Command="{Binding ContinueShoppingCommand}" 
-                    Width="120" 
-                    Height="35"
-                    Background="LightGray"/>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+            <Button Content="✅ Оформить заказ"
+                    Command="{Binding CheckoutCommand}"
+                    Style="{StaticResource ModernButtonStyle}"
+                    Width="180"
+                    Height="45"
+                    Margin="0,0,20,0"/>
+
+            <Button Content="🛒 Продолжить покупки"
+                    Command="{Binding ContinueShoppingCommand}"
+                    Style="{StaticResource ModernButtonStyle}"
+                    Width="180"
+                    Height="45"
+                    Background="{StaticResource SecondaryBrush}"/>
         </StackPanel>
     </Grid>
 </Window>
