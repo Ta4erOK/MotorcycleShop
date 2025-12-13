@@ -28,7 +28,7 @@ namespace MotorcycleShop.Data.InMemory
                     Color = "Black",
                     Price = 8500,
                     Description = "Надежный и стильный мотоцикл для города и за его пределами.",
-                    ImagePath = ""
+                    ImagePath = "/Images/harley davidson street 750.jpg"
                 },
                 new Motorcycle
                 {
@@ -41,7 +41,7 @@ namespace MotorcycleShop.Data.InMemory
                     Color = "Blue",
                     Price = 7800,
                     Description = "Отличная маневренность и комфорт в городе.",
-                    ImagePath = ""
+                    ImagePath = "/Images/yamaha mt-07.jpg"
                 },
                 new Motorcycle
                 {
@@ -54,7 +54,7 @@ namespace MotorcycleShop.Data.InMemory
                     Color = "Red",
                     Price = 9200,
                     Description = "Классический naked bike с отличной эргономикой.",
-                    ImagePath = ""
+                    ImagePath = "/Images/honda cb650r.jpg"
                 },
                 new Motorcycle
                 {
@@ -67,7 +67,7 @@ namespace MotorcycleShop.Data.InMemory
                     Color = "Green",
                     Price = 8700,
                     Description = "Идеальный выбор для начинающих и опытных райдеров.",
-                    ImagePath = ""
+                    ImagePath = "/Images/kawasaki ninja 650.jpg"
                 },
                 new Motorcycle
                 {
@@ -80,7 +80,7 @@ namespace MotorcycleShop.Data.InMemory
                     Color = "Yellow",
                     Price = 11000,
                     Description = "Стильный и надежный мотоцикл для путешествий и города.",
-                    ImagePath = ""
+                    ImagePath = "/Images/ducati scrambler.jpg"
                 },
                 new Motorcycle
                 {
@@ -93,7 +93,7 @@ namespace MotorcycleShop.Data.InMemory
                     Color = "White",
                     Price = 5500,
                     Description = "Легкий и маневренный мотоцикл для начинающих.",
-                    ImagePath = ""
+                    ImagePath = "/Images/bmw g 310r.jpg"
                 },
                 new Motorcycle
                 {
@@ -106,7 +106,7 @@ namespace MotorcycleShop.Data.InMemory
                     Color = "Red/White",
                     Price = 9500,
                     Description = "Современный спортбайк с отличной эргономикой.",
-                    ImagePath = ""
+                    ImagePath = "/Images/suzuki gsxc-8r.jpg"
                 },
                 new Motorcycle
                 {
@@ -119,7 +119,7 @@ namespace MotorcycleShop.Data.InMemory
                     Color = "Orange",
                     Price = 10200,
                     Description = "Мощный и динамичный мотоцикл для агрессивной езды.",
-                    ImagePath = ""
+                    ImagePath = "/Images/ktm 790 duke.jpg"
                 },
                 new Motorcycle
                 {
@@ -132,7 +132,7 @@ namespace MotorcycleShop.Data.InMemory
                     Color = "Firestorm Red",
                     Price = 12000,
                     Description = "Высокая производительность и комфорт в одном мотоцикле.",
-                    ImagePath = ""
+                    ImagePath = "/Images/triumph street triple r.jpg"
                 },
                 new Motorcycle
                 {
@@ -145,7 +145,7 @@ namespace MotorcycleShop.Data.InMemory
                     Color = "Naked Black",
                     Price = 14000,
                     Description = "Спортбайк с отличной управляемостью и мощностью.",
-                    ImagePath = ""
+                    ImagePath = "/Images/aprilia rs 660.jpg"
                 }
             };
         }
