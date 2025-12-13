@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using MotorcycleShop.Data.InMemory;
 using MotorcycleShop.Data.Interfaces;
 using MotorcycleShop.UI.ViewModels;
 
@@ -12,13 +11,9 @@ namespace MotorcycleShop.UI;
 /// </summary>
 public partial class MainWindow : Window
 {
-    public MainWindow()
+    public MainWindow(IMotorcycleRepository motorcycleRepository, IOrderRepository orderRepository, ICartRepository cartRepository)
     {
         InitializeComponent();
-
-        // В продвинутом приложении зависимости будут внедряться через DI контейнер
-        var motorcycleRepository = new InMemoryMotorcycleRepository();
-        var cartRepository = new InMemoryCartRepository();
 
         var viewModel = new MainWindowViewModel(motorcycleRepository, cartRepository);
         DataContext = viewModel;

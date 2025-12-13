@@ -1,6 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
+using MotorcycleShop.Domain;
+using System;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MotorcycleShop.Data.SqlServer;
 public class MotorcycleShopDbContextFactory : IDesignTimeDbContextFactory<MotorcycleShopDbContext>
@@ -23,3 +28,5 @@ public class MotorcycleShopDbContextFactory : IDesignTimeDbContextFactory<Motorc
         return new MotorcycleShopDbContext(optionsBuilder.Options);
     }
 }
+
+

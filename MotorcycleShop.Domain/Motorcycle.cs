@@ -14,5 +14,19 @@ namespace MotorcycleShop.Domain
         public decimal Price { get; set; }
         public string Description { get; set; } = string.Empty;
         public string ImagePath { get; set; } = string.Empty; // путь к изображению
+
+        public void CopyFrom(Motorcycle other)
+        {
+            // Копируем все свойства, КРОМЕ Id
+            Brand = other.Brand;
+            Model = other.Model;
+            Year = other.Year;
+            EngineCapacity = other.EngineCapacity;
+            Mileage = other.Mileage;
+            Color = other.Color;
+            Price = other.Price;
+            Description = other.Description;
+            ImagePath = other.ImagePath;
+        }
     }
 }

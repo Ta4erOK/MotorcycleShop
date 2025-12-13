@@ -2,91 +2,124 @@ using Microsoft.EntityFrameworkCore;
 using MotorcycleShop.Data.Interfaces;
 using MotorcycleShop.Domain;
 
-namespace MotorcycleShop.Data.SqlServer
+namespace MotorcycleShop.Data.SqlServer;
+
+public class CartRepository : ICartRepository
 {
-    public class CartRepository : ICartRepository
+    private readonly MotorcycleShopDbContext _context;
+
+    // Конструктор принимает DbContext через dependency injection
+    public CartRepository(MotorcycleShopDbContext context)
     {
-        private readonly MotorcycleShopDbContext _context;
+        _context = context;
+    }
 
-        public CartRepository(MotorcycleShopDbContext context)
+    public async Task<IEnumerable<CartItem>> GetAllItemsAsync()
+    {
+        // ВАЖНО: CartItem имеет навигационное свойство Motorcycle
+        // Используем Include для его загрузки:
+        return await _context.CartItems
+            .Include(ci => ci.Motorcycle)
+            .ToListAsync();
+    }
+
+    public async Task<CartItem?> GetByIdAsync(int id)
+    {
+        // FindAsync() асинхронно ищет сущность по первичному ключу
+        // Используем Include для загрузки связанной Motorcycle
+        return await _context.CartItems
+            .Include(ci => ci.Motorcycle)
+            .FirstOrDefaultAsync(ci => ci.Id == id);
+    }
+
+    public async Task<CartItem> AddItemAsync(Motorcycle motorcycle, int quantity = 1)
+    {
+        // Check if the motorcycle is already in the cart
+        var existingItem = await _context.CartItems
+            .FirstOrDefaultAsync(ci => ci.Motorcycle.Id == motorcycle.Id);
+
+        if (existingItem != null)
         {
-            _context = context;
+            // If item exists in cart, increase the quantity
+            existingItem.Quantity += quantity;
+            // Update() помечает сущность как измененную, и при SaveChanges() будет сформирован SQL UPDATE
+            _context.CartItems.Update(existingItem);
         }
-
-        public async Task<IEnumerable<CartItem>> GetAllItemsAsync()
+        else
         {
-            return await _context.CartItems.ToListAsync();
-        }
+            // Для корректной работы с внешними ключами, добавляем только ID мотоцикла
+            // Сначала убедимся, что мотоцикл существует в БД
+            var existingMotorcycle = await _context.Motorcycles.FindAsync(motorcycle.Id);
+            if (existingMotorcycle == null)
+                throw new ArgumentException($"Motorcycle with ID {motorcycle.Id} does not exist.");
 
-        public async Task<CartItem?> GetByIdAsync(int id)
-        {
-            return await _context.CartItems.FindAsync(id);
-        }
-
-        public async Task<CartItem> AddItemAsync(Motorcycle motorcycle, int quantity = 1)
-        {
-            // Check if the motorcycle is already in the cart
-            var existingItem = await _context.CartItems
-                .FirstOrDefaultAsync(ci => ci.Motorcycle.Id == motorcycle.Id);
-
-            if (existingItem != null)
+            // Otherwise, add a new item to the cart
+            var newItem = new CartItem
             {
-                // If item exists in cart, increase the quantity
-                existingItem.Quantity += quantity;
-                _context.CartItems.Update(existingItem);
-            }
-            else
-            {
-                // Otherwise, add a new item to the cart
-                var newItem = new CartItem
-                {
-                    Motorcycle = motorcycle,
-                    Quantity = quantity,
-                    UnitPrice = motorcycle.Price
-                };
-                _context.CartItems.Add(newItem);
-                existingItem = newItem;
-            }
-
-            await _context.SaveChangesAsync();
-            return existingItem;
+                Motorcycle = existingMotorcycle, // Используем существующий объект из БД
+                Quantity = quantity,
+                UnitPrice = existingMotorcycle.Price
+            };
+            // Add() добавляет сущность в отслеживание EF Core
+            _context.CartItems.Add(newItem);
+            existingItem = newItem;
         }
 
-        public async Task<CartItem> UpdateItemAsync(CartItem cartItem)
-        {
-            _context.CartItems.Update(cartItem);
-            await _context.SaveChangesAsync();
-            return cartItem;
-        }
+        // SaveChangesAsync() асинхронно генерирует и выполняет SQL
+        await _context.SaveChangesAsync();
+        return existingItem;
+    }
 
-        public async Task<bool> RemoveItemAsync(int id)
-        {
-            var cartItem = await _context.CartItems.FindAsync(id);
-            if (cartItem == null) return false;
+    public async Task<CartItem> UpdateItemAsync(CartItem cartItem)
+    {
+        // Сначала находим существующую сущность
+        var existing = await _context.CartItems.FindAsync(cartItem.Id);
+        if (existing == null)
+            throw new InvalidOperationException($"CartItem with ID {cartItem.Id} not found");
 
-            _context.CartItems.Remove(cartItem);
-            await _context.SaveChangesAsync();
-            return true;
-        }
+        // Копируем все свойства (кроме Id) из cartItem в existing
+        existing.CopyFrom(cartItem);
+        // SaveChangesAsync() генерирует SQL UPDATE только для изменённых полей
+        await _context.SaveChangesAsync();
+        return existing;
+    }
 
-        public async Task<bool> ClearCartAsync()
-        {
-            var cartItems = await _context.CartItems.ToListAsync();
-            _context.CartItems.RemoveRange(cartItems);
-            await _context.SaveChangesAsync();
-            return true;
-        }
+    public async Task<bool> RemoveItemAsync(int id)
+    {
+        var cartItem = await _context.CartItems.FindAsync(id);
+        if (cartItem == null)
+            return false;
 
-        public async Task<decimal> GetTotalAmountAsync()
-        {
-            var cartItems = await _context.CartItems.ToListAsync();
-            return cartItems.Sum(item => item.Price);
-        }
+        // Remove() помечает сущность для удаления
+        _context.CartItems.Remove(cartItem);
+        // SaveChangesAsync() асинхронно генерирует и выполняет SQL DELETE
+        await _context.SaveChangesAsync();
+        return true;
+    }
 
-        public async Task<int> GetItemCountAsync()
-        {
-            var cartItems = await _context.CartItems.ToListAsync();
-            return cartItems.Sum(item => item.Quantity);
-        }
+    public async Task<bool> ClearCartAsync()
+    {
+        var cartItems = await _context.CartItems.ToListAsync();
+        // RemoveRange() удаляет несколько сущностей
+        _context.CartItems.RemoveRange(cartItems);
+        // SaveChangesAsync() асинхронно генерирует и выполняет SQL DELETE для всех элементов
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<decimal> GetTotalAmountAsync()
+    {
+        // AsQueryable() создаёт LINQ-запрос (ещё не выполнен)
+        var cartItems = await _context.CartItems.ToListAsync();
+        // Вычисляем сумму на клиенте
+        return cartItems.Sum(item => item.Price);
+    }
+
+    public async Task<int> GetItemCountAsync()
+    {
+        // AsQueryable() создаёт LINQ-запрос (ещё не выполнен)
+        var cartItems = await _context.CartItems.ToListAsync();
+        // Вычисляем сумму на клиенте
+        return cartItems.Sum(item => item.Quantity);
     }
 }

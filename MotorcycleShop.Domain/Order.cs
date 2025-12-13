@@ -16,6 +16,19 @@ namespace MotorcycleShop.Domain
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
         public List<OrderItem> Items { get; set; } = new List<OrderItem>();
         public decimal TotalAmount => Items.Sum(item => item.Price * item.Quantity);
+
+        public void CopyFrom(Order other)
+        {
+            // Копируем все свойства, КРОМЕ Id
+            CustomerName = other.CustomerName;
+            Email = other.Email;
+            Phone = other.Phone;
+            Address = other.Address;
+            Comment = other.Comment;
+            OrderDate = other.OrderDate;
+            Status = other.Status;
+            Items = other.Items; // Примечание: копируем ссылку на список, а не сам список
+        }
     }
 
     public enum OrderStatus
